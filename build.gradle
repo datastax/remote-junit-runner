@@ -1,0 +1,118 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:gradle-processes:0.3.0'
+    }
+}
+plugins {
+    id "com.github.hierynomus.license" version "0.12.1"
+}
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.processes'
+
+group = 'com.datastax'
+version = '0.1'
+
+description = "Remote JUnit runner"
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+configurations {
+
+    provided
+
+}
+
+repositories {
+        
+     mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.6.0'
+    compile 'junit:junit:4.12'
+    compile 'com.healthmarketscience.rmiio:rmiio:2.1.0'
+    compile ('org.unitils:unitils-core:3.4.2') { transitive = false }
+
+    provided 'org.slf4j:slf4j-simple:1.6.0'
+
+    testCompile 'pl.pragmatists:JUnitParams:1.0.4'
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.5'
+    testRuntime "cglib:cglib-nodep:3.1"
+}
+
+license {
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    header file('codequality/HEADER')
+}
+
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+    }
+    test {
+        compileClasspath += configurations.provided
+        runtimeClasspath += configurations.provided
+    }
+}
+
+idea {
+    project {
+        vcs = 'Git'
+    }
+    module {
+        scopes.COMPILE.plus += [configurations.provided]
+    }
+}
+
+import com.github.jengelman.gradle.plugins.processes.tasks.JavaFork
+task startTestServer(type: JavaFork, dependsOn: testClasses) {
+    main = 'com.datastax.junit.remote.RemoteTestServer'
+    classpath = test.classpath
+}
+
+task stopTestServer << {
+    startTestServer.processHandle.abort()
+}
+
+test {
+    dependsOn startTestServer
+    finalizedBy stopTestServer
+    exclude '**/*$*'
+}
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.allJava
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourceJar {
+                classifier "sources"
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url datastaxRepositoryUrl
+            credentials {
+                username datastaxRepositoryUsername
+                password datastaxRepositoryPassword
+            }
+        }
+    }
+
+}
