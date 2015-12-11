@@ -6,6 +6,8 @@
 package com.datastax.junit.remote;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.runner.Description;
 import org.junit.runner.manipulation.Filterable;
@@ -17,6 +19,8 @@ import org.junit.runner.manipulation.NoTestsRemainException;
 public class FilterAdapter extends org.junit.runner.manipulation.Filter
 {
     private final Filter delegate;
+
+    private final Map<Description, Boolean> shouldRunCache = new HashMap<>();
 
     public FilterAdapter(Filter delegate)
     {
@@ -56,7 +60,12 @@ public class FilterAdapter extends org.junit.runner.manipulation.Filter
     {
         try
         {
-            return delegate.shouldRun(description);
+            Boolean result = shouldRunCache.get(description);
+            if (result == null) {
+                result = delegate.shouldRun(description);
+                shouldRunCache.put(description, result);
+            }
+            return result;
         } catch (RemoteException e) {
             throw new RuntimeException(e);
         }
