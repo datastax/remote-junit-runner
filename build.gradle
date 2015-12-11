@@ -18,7 +18,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.github.johnrengelman.processes'
 
 group = 'com.datastax'
-version = '0.1'
+version = '0.1.1'
 
 description = "Remote JUnit runner"
 
@@ -107,7 +107,7 @@ publishing {
 
     repositories {
         maven {
-            url datastaxRepositoryUrl
+            url version.endsWith('-SNAPSHOT') ? datastaxSnapshotRepositoryUrl : datastaxRepositoryUrl
             credentials {
                 username datastaxRepositoryUsername
                 password datastaxRepositoryPassword
