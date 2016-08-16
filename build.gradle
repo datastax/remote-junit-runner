@@ -18,7 +18,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.github.johnrengelman.processes'
 
 group = 'com.datastax'
-version = '0.1.1'
+version = '0.1.2'
 
 description = "Remote JUnit runner"
 
@@ -101,6 +101,19 @@ publishing {
 
             artifact sourceJar {
                 classifier "sources"
+            }
+
+            pom.withXml {
+                def build = new groovy.util.NodeBuilder()
+                build.current = asNode()
+
+                // add license info
+                build.licenses {
+                    delegate.license {
+                        delegate.name('Apache License Version 2.0')
+                        delegate.url('http://www.apache.org/licenses/LICENSE-2.0')
+                    }
+                }
             }
         }
     }
