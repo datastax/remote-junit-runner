@@ -3,19 +3,17 @@ buildscript {
         mavenCentral()
         jcenter()
     }
-    dependencies {
-        classpath 'com.github.jengelman.gradle.plugins:gradle-processes:0.3.0'
-    }
 }
 plugins {
-    id "com.github.hierynomus.license" version "0.12.1"
+    id 'java'
+    id 'groovy'
+    id 'idea'
+    id 'maven'
+    id 'com.github.johnrengelman.processes' version '0.3.0'
+    id 'signing'
+    id "com.github.hierynomus.license" version '0.13.1'
 }
 
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'idea'
-apply plugin: 'maven-publish'
-apply plugin: 'com.github.johnrengelman.processes'
 
 group = 'com.datastax'
 version = '0.1.2'
@@ -25,15 +23,25 @@ description = "Remote JUnit runner"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
+ext.defaultPropertyValue = { name, value, Closure converter = null ->
+    if (!ext.has(name)) ext.set(name, converter == null ? value : converter.call(value))
+    else if (converter) ext.set(name, converter.call(ext.get(name)))
+    ext.get(name)
+}
+
 configurations {
 
     provided
-
+    gpg
 }
 
 repositories {
         
-     mavenCentral()
+    mavenCentral()
+    maven {
+        url = 'http://maven.datastax.lan:8081/nexus/content/repositories/dse'
+    }
+
 }
 
 dependencies {
@@ -48,6 +56,22 @@ dependencies {
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'org.codehaus.groovy:groovy-all:2.4.5'
     testRuntime "cglib:cglib-nodep:3.1"
+
+    gpg 'com.datastax.dse:gpg-secring:1.0@gpg'
+}
+
+signing {
+    sign configurations.archives
+}
+
+javadoc {
+    // disable the crazy super-strict doclint tool in Java 8
+    //noinspection SpellCheckingInspection
+    options.addStringOption('Xdoclint:none', '-quiet')
+}
+signArchives.doFirst {
+    defaultPropertyValue('signing.secretKeyRingFile', configurations.gpg.singleFile.absolutePath)
+    defaultPropertyValue('signing.keyId', '54B279ED')
 }
 
 license {
@@ -90,42 +114,64 @@ test {
     exclude '**/*$*'
 }
 
-task sourceJar(type: Jar) {
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
     from sourceSets.main.allJava
 }
 
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
 
-            artifact sourceJar {
-                classifier "sources"
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+
+// OSSRH publication
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            // POM signature
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+            // Target repository
+            repository(url: defaultPropertyValue('publishRepoUrl', "https://oss.sonatype.org/service/local/staging/deploy/maven2/")) {
+                authentication(userName: ossrhUser, password: ossrhPassword)
             }
+            snapshotRepository(url: defaultPropertyValue('publishSnapshotRepoUrl', "https://oss.sonatype.org/content/repositories/snapshots/")) {
+                authentication(userName: ossrhUser, password: ossrhPassword)
+            }
+            pom.project {
+                name project.name
+                description project.description
+                packaging 'jar'
+                url 'https://github.com/datastax/remote-junit-runner'
 
-            pom.withXml {
-                def build = new groovy.util.NodeBuilder()
-                build.current = asNode()
+                scm {
+                    connection 'scm:git:https://github.com/datastax/remote-junit-runner.git'
+                    developerConnection 'scm:git:git@github.com:datastax/remote-junit-runner.git'
+                    url 'https://github.com/datastax/remote-junit-runner.git'
+                }
 
-                // add license info
-                build.licenses {
-                    delegate.license {
-                        delegate.name('Apache License Version 2.0')
-                        delegate.url('http://www.apache.org/licenses/LICENSE-2.0')
+                licenses {
+                    license {
+                        name 'Apache License Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0'
+                        distribution 'repo'
                     }
                 }
+
+                developers {
+                    developer {
+                        name = 'Various'
+                        organization = 'DataStax'
+                    }
+                }
+
             }
         }
     }
-
-    repositories {
-        maven {
-            url version.endsWith('-SNAPSHOT') ? datastaxSnapshotRepositoryUrl : datastaxRepositoryUrl
-            credentials {
-                username datastaxRepositoryUsername
-                password datastaxRepositoryPassword
-            }
-        }
-    }
-
 }
+
+
