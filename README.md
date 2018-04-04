@@ -1,7 +1,7 @@
 What?
 ====
 
-This JUnit extension enables remote execution of a JUnit test, supporting arbitrary JUnit runner.erver is not running.
+This JUnit extension enables remote execution of a JUnit test, supporting arbitrary JUnit runner on the remote JVM.
 
 Why?
 ====
@@ -15,7 +15,7 @@ How?
 - Add the artifact 'com.datastax:remote-junit-runner:0.1' to your project
 - Annotate test class with `@RunWith(com.datastax.junit.remote.Remote.class)`. 
   The annotation can be placed on a superclass.
-- If you need to specify the JUnit that is going to be used on the remote side, 
+- If you need to specify the JUnit runner that is going to be used on the remote side, 
   add @Remote.RunWith annotation on the test class:
   
   Running remotely a test suite:
