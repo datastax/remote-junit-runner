@@ -38,7 +38,7 @@ public class RemoteSuite
 }
 ```
 
-  Running remotelly parametrized tests:
+  Running remotely parametrized tests:
   
 ```
 @RunWith(Remote.class)
