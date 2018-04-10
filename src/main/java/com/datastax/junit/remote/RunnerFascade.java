@@ -40,7 +40,6 @@ import com.healthmarketscience.rmiio.RemoteOutputStreamClient;
  */
 public class RunnerFascade extends UnicastRemoteObject implements Runner
 {
-
     private final org.junit.runner.Runner delegate;
 
     public RunnerFascade(org.junit.runner.Runner delegate) throws RemoteException
@@ -129,21 +128,39 @@ public class RunnerFascade extends UnicastRemoteObject implements Runner
             delegate.fireTestFinished(description);
         }
 
-        @Override public void testFailure(Failure failure) throws Exception
+        @Override
+        public void testFailure(Failure failure) throws Exception
         {
-            flushStreams();
-            delegate.fireTestFailure(failure);
+            // wrap in a try-catch block to capture a potential Exception that would cause a failure to be swallowed
+            // and not reported because the code was unable to perform fireTestFailure(). See DSP-15784 for details.
+            try
+            {
+                flushStreams();
+                delegate.fireTestFailure(failure);
+            } catch (Exception e1)
+            {
+                delegate.fireTestFailure(JUnitFailureUtil.repackFailure(e1, failure));
+            }
         }
 
-        @Override public void testAssumptionFailure(Failure failure)
+        @Override
+        public void testAssumptionFailure(Failure failure)
         {
+            // wrap in a try-catch block to capture a potential Exception that would cause a failure to be swallowed
+            // and not reported.
             try
             {
                 flushStreams();
                 delegate.fireTestAssumptionFailed(failure);
-            } catch (Exception e)
+            } catch (Exception e1)
             {
-                throw new RuntimeException(e);
+                try
+                {
+                    delegate.fireTestAssumptionFailed(JUnitFailureUtil.repackFailure(e1, failure));
+                } catch (Exception e2)
+                {
+                    throw new RuntimeException(e1.toString(), e2);
+                }
             }
         }
 
@@ -159,4 +176,5 @@ public class RunnerFascade extends UnicastRemoteObject implements Runner
             System.err.flush();
         }
     }
+
 }
