@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -47,17 +47,17 @@ public class RunnerFascade extends UnicastRemoteObject implements Runner
         this.delegate = delegate;
     }
 
-    @Override public Description getDescription() throws RemoteException
+    @Override public Description getDescription()
     {
         return delegate.getDescription();
     }
 
-    @Override public int testCount() throws RemoteException
+    @Override public int testCount()
     {
         return delegate.testCount();
     }
 
-    @Override public void run(RunNotifier remoteRunNotifier, RemoteOutputStream out, RemoteOutputStream err) throws RemoteException
+    @Override public void run(RunNotifier remoteRunNotifier, RemoteOutputStream out, RemoteOutputStream err)
     {
         RunNotifierAdapter adapter = new RunNotifierAdapter(remoteRunNotifier);
         org.junit.runner.notification.RunNotifier runNotifier = new org.junit.runner.notification.RunNotifier();
@@ -67,7 +67,7 @@ public class RunnerFascade extends UnicastRemoteObject implements Runner
         try
         (
             PrintStream pout = new PrintStream(RemoteOutputStreamClient.wrap(out), true);
-            PrintStream perr = new PrintStream(RemoteOutputStreamClient.wrap(err), true);
+            PrintStream perr = new PrintStream(RemoteOutputStreamClient.wrap(err), true)
         )
         {
             System.setOut(pout);
@@ -170,7 +170,7 @@ public class RunnerFascade extends UnicastRemoteObject implements Runner
             delegate.fireTestIgnored(description);
         }
 
-        private void flushStreams() throws Exception
+        private void flushStreams()
         {
             System.out.flush();
             System.err.flush();

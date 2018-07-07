@@ -4,24 +4,24 @@ buildscript {
         jcenter()
     }
 }
-plugins {
-    id 'java'
-    id 'groovy'
-    id 'idea'
-    id 'maven'
-    id 'com.github.johnrengelman.processes' version '0.3.0'
-    id 'signing'
-    id "com.github.hierynomus.license" version '0.13.1'
-}
 
+plugins {
+    id 'com.github.johnrengelman.processes' version '0.4.1' // REQUIRES Gradle 4.5 !
+    id 'com.github.hierynomus.license' version '0.14.0'
+}
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 group = 'com.datastax'
-version = '0.1.3'
+version = '0.2.0'
 
 description = "Remote JUnit runner"
 
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 ext.defaultPropertyValue = { name, value, Closure converter = null ->
     if (!ext.has(name)) ext.set(name, converter == null ? value : converter.call(value))
@@ -45,17 +45,17 @@ repositories {
 }
 
 dependencies {
-    compile 'org.slf4j:slf4j-api:1.6.0'
+    compile 'org.slf4j:slf4j-api:1.7.25'
     compile 'junit:junit:4.12'
-    compile 'com.healthmarketscience.rmiio:rmiio:2.1.0'
-    compile ('org.unitils:unitils-core:3.4.2') { transitive = false }
+    compile 'com.healthmarketscience.rmiio:rmiio:2.1.2'
+    compile ('org.unitils:unitils-core:3.4.6') { transitive = false }
 
-    provided 'org.slf4j:slf4j-simple:1.6.0'
+    provided 'org.slf4j:slf4j-simple:1.7.25'
 
-    testCompile 'pl.pragmatists:JUnitParams:1.0.4'
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-    testCompile 'org.codehaus.groovy:groovy-all:2.4.5'
-    testRuntime "cglib:cglib-nodep:3.1"
+    testCompile 'pl.pragmatists:JUnitParams:1.1.1'
+    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    testCompile 'org.codehaus.groovy:groovy-all:2.5.0'
+    testRuntime "cglib:cglib-nodep:3.2.7"
 
     gpg 'com.datastax.dse:gpg-secring:1.0@gpg'
 }
@@ -63,15 +63,15 @@ dependencies {
 signing {
     sign configurations.archives
 }
+signArchives.doFirst {
+    defaultPropertyValue('signing.secretKeyRingFile', configurations.gpg.singleFile.absolutePath)
+    defaultPropertyValue('signing.keyId', '54B279ED')
+}
 
 javadoc {
     // disable the crazy super-strict doclint tool in Java 8
     //noinspection SpellCheckingInspection
     options.addStringOption('Xdoclint:none', '-quiet')
-}
-signArchives.doFirst {
-    defaultPropertyValue('signing.secretKeyRingFile', configurations.gpg.singleFile.absolutePath)
-    defaultPropertyValue('signing.keyId', '54B279ED')
 }
 
 license {

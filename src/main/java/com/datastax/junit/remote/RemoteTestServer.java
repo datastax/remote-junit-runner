@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,6 +26,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 
 import org.slf4j.Logger;
@@ -51,18 +52,16 @@ public class RemoteTestServer
     /**
      *
      * @param port where RMI registry should listen at
-     * @throws Exception
      */
-    public RemoteTestServer(int port) throws Exception
+    public RemoteTestServer(int port)
     {
         this.port = port;
     }
 
     /**
      * Creates the test infrastructure having RMI registry on the port 4567
-     * @throws Exception
      */
-    public RemoteTestServer() throws Exception
+    public RemoteTestServer()
     {
         this(DEFAULT_PORT);
     }
@@ -70,9 +69,8 @@ public class RemoteTestServer
     /**
      *
      * @param socketAddress RMI registry will listen at the given socket
-     * @throws Exception
      */
-    public RemoteTestServer(InetSocketAddress socketAddress) throws Exception
+    public RemoteTestServer(InetSocketAddress socketAddress)
     {
         this(socketAddress.getPort());
         this.bindAddrees = socketAddress.getAddress();
@@ -80,7 +78,6 @@ public class RemoteTestServer
 
     /**
      * Starts the test services
-     * @throws Exception
      */
     public void start() throws Exception
     {
@@ -88,7 +85,7 @@ public class RemoteTestServer
            registry = LocateRegistry.createRegistry(port);
         } else {
             SocketFactory socketFactory = new SocketFactory(bindAddrees);
-            registry = LocateRegistry.createRegistry(port, socketFactory, socketFactory);
+            registry = LocateRegistry.createRegistry(port, null, socketFactory);
         }
         RunnerFactory factory = new DefaultRunnerFactory();
 
@@ -98,7 +95,6 @@ public class RemoteTestServer
 
     /**
      * Stops the services
-     * @throws Exception
      */
     public void stop() throws Exception
     {
@@ -117,7 +113,7 @@ public class RemoteTestServer
         }
     }
 
-    private static class SocketFactory extends RMIMasterSocketFactory
+    private static class SocketFactory implements RMIServerSocketFactory
     {
         private final InetAddress bindAddress;
 

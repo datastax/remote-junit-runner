@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,17 +31,17 @@ import org.junit.runner.notification.Failure;
  */
 public interface RunNotifier extends java.rmi.Remote
 {
-    public void fireTestRunStarted(Description description) throws RemoteException;
+    void fireTestRunStarted(Description description) throws RemoteException;
 
-    public void fireTestRunFinished(Result result) throws RemoteException;
+    void fireTestRunFinished(Result result) throws RemoteException;
 
-    public void fireTestStarted(Description description) throws RemoteException;
+    void fireTestStarted(Description description) throws RemoteException;
 
-    public void fireTestFailure(Failure failure) throws RemoteException;
+    void fireTestFailure(Failure failure) throws RemoteException;
 
-    public void fireTestAssumptionFailed(Failure failure) throws RemoteException;
+    void fireTestAssumptionFailed(Failure failure) throws RemoteException;
 
-    public void fireTestIgnored(Description description) throws RemoteException;
+    void fireTestIgnored(Description description) throws RemoteException;
 
-    public void fireTestFinished(Description description) throws RemoteException;
+    void fireTestFinished(Description description) throws RemoteException;
 }

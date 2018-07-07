@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,12 +31,12 @@ import com.healthmarketscience.rmiio.RemoteOutputStream;
  */
 public interface Runner extends java.rmi.Remote
 {
-    public Description getDescription() throws RemoteException;
+    Description getDescription() throws RemoteException;
 
-    public void run(RunNotifier runNotifier, RemoteOutputStream out, RemoteOutputStream err) throws RemoteException;
+    void run(RunNotifier runNotifier, RemoteOutputStream out, RemoteOutputStream err) throws RemoteException;
 
-    public int testCount() throws RemoteException;
+    int testCount() throws RemoteException;
 
-    public void filter(Filter filter) throws RemoteException;
+    void filter(Filter filter) throws RemoteException;
 
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -34,12 +34,11 @@ import org.junit.runner.manipulation.Filterable;
 import org.junit.runner.manipulation.NoTestsRemainException;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import org.junit.runners.model.InitializationError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.healthmarketscience.rmiio.RemoteOutputStream;
 import com.healthmarketscience.rmiio.SimpleRemoteOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.unitils.util.AnnotationUtils;
 
 /**
@@ -47,22 +46,22 @@ import org.unitils.util.AnnotationUtils;
  */
 public class Remote extends Runner implements Filterable {
 
+    private final static Logger log = LoggerFactory.getLogger(RemoteTestServer.class);
+
     /**
      * Specify the host where the test are going to be executed
      */
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
-    public static @interface Host {
+    public @interface Host {
 
         /**
          * Host name
-         * @return
          */
         String name() default "localhost";
 
         /**
          * The port where the test runner service is listening
-         * @return
          */
         int port() default RemoteTestServer.DEFAULT_PORT;
 
@@ -70,7 +69,7 @@ public class Remote extends Runner implements Filterable {
 
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
-    public static @interface RunWith {
+    public @interface RunWith {
 
         /**
          * The runner class that is going to be used for running tests on the remote side.
@@ -78,7 +77,6 @@ public class Remote extends Runner implements Filterable {
         Class<? extends Runner> value() default BlockJUnit4ClassRunner.class;
 
     }
-    private static final Logger log = LoggerFactory.getLogger(com.datastax.junit.remote.Remote.class);
 
     private com.datastax.junit.remote.Runner delegate;
 
@@ -86,7 +84,8 @@ public class Remote extends Runner implements Filterable {
     protected Class<? extends Runner> remoteRunnerClass;
 
     protected Class<?> clazz;
-    public Remote(Class<?> clazz) throws InitializationError {
+
+    public Remote(Class<?> clazz) {
         this.clazz = clazz;
     }
 
@@ -154,7 +153,7 @@ public class Remote extends Runner implements Filterable {
             delegate.filter(new RemoteFilter(filter));
         } catch (RemoteException e) {
             Throwable cause = e.getCause();
-            if (cause != null && cause instanceof RemoteException && cause.getMessage().startsWith("notestsremain")) {
+            if (cause instanceof RemoteException && cause.getMessage().startsWith("notestsremain")) {
                 throw (NoTestsRemainException) cause.getCause();
             } else {
                 throw new RuntimeException(e);

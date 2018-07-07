@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -39,23 +39,23 @@ public class RunNotifierFascade extends UnicastRemoteObject implements RunNotifi
         this.delegate = delegate;
     }
 
-    @Override public void fireTestRunStarted(Description description) throws RemoteException
+    @Override public void fireTestRunStarted(Description description)
     {
         delegate.fireTestRunStarted(description);
     }
 
-    @Override public void fireTestRunFinished(Result result) throws RemoteException
+    @Override public void fireTestRunFinished(Result result)
     {
         delegate.fireTestRunFinished(result);
     }
 
-    @Override public void fireTestStarted(Description description) throws RemoteException
+    @Override public void fireTestStarted(Description description)
     {
         delegate.fireTestStarted(description);
     }
 
     @Override
-    public void fireTestFailure(Failure failure) throws RemoteException
+    public void fireTestFailure(Failure failure)
     {
         // wrap in a try-catch block to capture a potential Exception that would cause a failure to be swallowed
         // and not reported because the code was unable to perform fireTestFailure(). See DSP-15784 for details.
@@ -69,7 +69,7 @@ public class RunNotifierFascade extends UnicastRemoteObject implements RunNotifi
     }
 
     @Override
-    public void fireTestAssumptionFailed(Failure failure) throws RemoteException
+    public void fireTestAssumptionFailed(Failure failure)
     {
         // wrap in a try-catch block to capture a potential Exception that would cause a failure to be swallowed
         // and not reported.
@@ -88,12 +88,12 @@ public class RunNotifierFascade extends UnicastRemoteObject implements RunNotifi
         }
     }
 
-    @Override public void fireTestIgnored(Description description) throws RemoteException
+    @Override public void fireTestIgnored(Description description)
     {
         delegate.fireTestIgnored(description);
     }
 
-    @Override public void fireTestFinished(Description description) throws RemoteException
+    @Override public void fireTestFinished(Description description)
     {
         delegate.fireTestFinished(description);
     }
