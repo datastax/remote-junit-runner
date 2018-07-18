@@ -60,6 +60,7 @@ dependencies {
     gpg 'com.datastax.dse:gpg-secring:1.0@gpg'
 }
 
+/*
 signing {
     sign configurations.archives
 }
@@ -67,6 +68,7 @@ signArchives.doFirst {
     defaultPropertyValue('signing.secretKeyRingFile', configurations.gpg.singleFile.absolutePath)
     defaultPropertyValue('signing.keyId', '54B279ED')
 }
+*/
 
 javadoc {
     // disable the crazy super-strict doclint tool in Java 8
@@ -128,7 +130,7 @@ artifacts {
     archives javadocJar, sourcesJar
 }
 
-
+/*
 // OSSRH publication
 uploadArchives {
     repositories {
@@ -173,4 +175,5 @@ uploadArchives {
         }
     }
 }
+*/
 
