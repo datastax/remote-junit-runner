@@ -32,8 +32,6 @@ import java.rmi.server.UnicastRemoteObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.rmi.transport.proxy.RMIMasterSocketFactory;
-
 /**
  * Server starts services required to the remote JUnit test execution. Under the hood,
  * it uses good old Java RMI for communication with the client JVM.
