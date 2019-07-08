@@ -39,7 +39,7 @@ repositories {
 
     mavenCentral()
     maven {
-        url = 'http://maven.datastax.lan:8081/nexus/content/repositories/dse'
+        url = 'https://repo.sjc.dsinternal.org/artifactory/dse'
     }
 
 }
