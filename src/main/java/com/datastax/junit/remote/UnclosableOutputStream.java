@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -55,7 +55,7 @@ public class UnclosableOutputStream extends OutputStream
         delegate.flush();
     }
 
-    @Override public void close() throws IOException
+    @Override public void close()
     {
         // no op
     }

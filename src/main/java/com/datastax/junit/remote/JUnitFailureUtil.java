@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -45,7 +45,6 @@ public class JUnitFailureUtil
      *
      * @param e1      : Exception that causes the failure unable to be fired
      * @param failure : The failure that needs to be repacked
-     * @return
      */
     public static Failure repackFailure(Exception e1, Failure failure)
     {

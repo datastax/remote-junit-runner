@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -28,11 +28,7 @@ import java.rmi.RemoteException;
 public interface RunnerFactory extends java.rmi.Remote
 {
     /**
-     *
-     * @param runnerClassName
-     * @param testClassName
      * @return runner instance for executing tests remotelly
-     * @throws RemoteException
      */
-    public Runner create(String runnerClassName, String testClassName) throws RemoteException;
+    Runner create(String runnerClassName, String testClassName) throws RemoteException;
 }

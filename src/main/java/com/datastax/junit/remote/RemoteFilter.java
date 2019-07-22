@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -36,12 +36,12 @@ public class RemoteFilter extends UnicastRemoteObject implements Filter
     }
 
     @Override
-    public boolean shouldRun(Description description) throws RemoteException
+    public boolean shouldRun(Description description)
     {
         return delegate.shouldRun(description);
     }
 
-    @Override public String describe() throws RemoteException
+    @Override public String describe()
     {
         return delegate.describe();
     }

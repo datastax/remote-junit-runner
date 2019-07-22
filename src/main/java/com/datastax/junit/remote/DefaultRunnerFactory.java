@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -34,8 +34,7 @@ public class DefaultRunnerFactory extends UnicastRemoteObject implements RunnerF
     {
     }
 
-    @Override public Runner create(String runnerClassName, String testClassName) throws RemoteException
-    {
+    @Override public Runner create(String runnerClassName, String testClassName) {
         try
         {
             return new RunnerFascade(new RunnerBuilder(true).build(

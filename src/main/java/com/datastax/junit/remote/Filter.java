@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2016 DataStax Inc.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,8 +29,8 @@ import org.junit.runner.Description;
  */
 public interface Filter extends java.rmi.Remote
 {
-    public abstract boolean shouldRun(Description description) throws RemoteException;
+    boolean shouldRun(Description description) throws RemoteException;
 
-    public abstract String describe() throws RemoteException;
+    String describe() throws RemoteException;
 
 }
