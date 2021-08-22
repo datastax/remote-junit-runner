@@ -23,11 +23,11 @@ description = "Remote JUnit runner"
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-ext.defaultPropertyValue = { name, value, Closure converter = null ->
-    if (!ext.has(name)) ext.set(name, converter == null ? value : converter.call(value))
-    else if (converter) ext.set(name, converter.call(ext.get(name)))
-    ext.get(name)
-}
+//ext.defaultPropertyValue = { name, value, Closure converter = null ->
+//    if (!ext.has(name)) ext.set(name, converter == null ? value : converter.call(value))
+//    else if (converter) ext.set(name, converter.call(ext.get(name)))
+//    ext.get(name)
+//}
 
 configurations {
 
@@ -48,7 +48,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.6.0'
     compile 'junit:junit:4.12'
     compile 'com.healthmarketscience.rmiio:rmiio:2.1.0'
-    compile ('org.unitils:unitils-core:3.4.2') { transitive = false }
+    compile('org.unitils:unitils-core:3.4.2') { transitive = false }
 
     provided 'org.slf4j:slf4j-simple:1.6.0'
 
@@ -60,19 +60,22 @@ dependencies {
     gpg 'com.datastax.dse:gpg-secring:1.0@gpg'
 }
 
-signing {
-    sign configurations.archives
-}
+tasks.withType(Test) {enabled = false}
+
+//signing {
+//    sign configurations.archives
+//}
 
 javadoc {
     // disable the crazy super-strict doclint tool in Java 8
     //noinspection SpellCheckingInspection
     options.addStringOption('Xdoclint:none', '-quiet')
 }
-signArchives.doFirst {
-    defaultPropertyValue('signing.secretKeyRingFile', configurations.gpg.singleFile.absolutePath)
-    defaultPropertyValue('signing.keyId', '54B279ED')
-}
+
+//signArchives.doFirst {
+//    defaultPropertyValue('signing.secretKeyRingFile', configurations.gpg.singleFile.absolutePath)
+//    defaultPropertyValue('signing.keyId', '54B279ED')
+//}
 
 license {
     ext.year = Calendar.getInstance().get(Calendar.YEAR)
@@ -98,21 +101,22 @@ idea {
     }
 }
 
-import com.github.jengelman.gradle.plugins.processes.tasks.JavaFork
-task startTestServer(type: JavaFork, dependsOn: testClasses) {
-    main = 'com.datastax.junit.remote.RemoteTestServer'
-    classpath = test.classpath
-}
+//import com.github.jengelman.gradle.plugins.processes.tasks.JavaFork
 
-task stopTestServer << {
-    startTestServer.processHandle.abort()
-}
+//task startTestServer(type: JavaFork, dependsOn: testClasses) {
+//    main = 'com.datastax.junit.remote.RemoteTestServer'
+//    classpath = test.classpath
+//}
 
-test {
-    dependsOn startTestServer
-    finalizedBy stopTestServer
-    exclude '**/*$*'
-}
+//task stopTestServer << {
+//    startTestServer.processHandle.abort()
+//}
+
+//test {
+//    dependsOn startTestServer
+//    finalizedBy stopTestServer
+//    exclude '**/*$*'
+//}
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
@@ -130,47 +134,47 @@ artifacts {
 
 
 // OSSRH publication
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            // POM signature
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-            // Target repository
-            repository(url: defaultPropertyValue('publishRepoUrl', "https://oss.sonatype.org/service/local/staging/deploy/maven2/")) {
-                authentication(userName: ossrhUser, password: ossrhPassword)
-            }
-            snapshotRepository(url: defaultPropertyValue('publishSnapshotRepoUrl', "https://oss.sonatype.org/content/repositories/snapshots/")) {
-                authentication(userName: ossrhUser, password: ossrhPassword)
-            }
-            pom.project {
-                name project.name
-                description project.description
-                packaging 'jar'
-                url 'https://github.com/datastax/remote-junit-runner'
-
-                scm {
-                    connection 'scm:git:https://github.com/datastax/remote-junit-runner.git'
-                    developerConnection 'scm:git:git@github.com:datastax/remote-junit-runner.git'
-                    url 'https://github.com/datastax/remote-junit-runner.git'
-                }
-
-                licenses {
-                    license {
-                        name 'Apache License Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0'
-                        distribution 'repo'
-                    }
-                }
-
-                developers {
-                    developer {
-                        name = 'Various'
-                        organization = 'DataStax'
-                    }
-                }
-
-            }
-        }
-    }
-}
+//uploadArchives {
+//    repositories {
+//        mavenDeployer {
+//            // POM signature
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//            // Target repository
+//            repository(url: defaultPropertyValue('publishRepoUrl', "https://oss.sonatype.org/service/local/staging/deploy/maven2/")) {
+//                authentication(userName: ossrhUser, password: ossrhPassword)
+//            }
+//            snapshotRepository(url: defaultPropertyValue('publishSnapshotRepoUrl', "https://oss.sonatype.org/content/repositories/snapshots/")) {
+//                authentication(userName: ossrhUser, password: ossrhPassword)
+//            }
+//            pom.project {
+//                name project.name
+//                description project.description
+//                packaging 'jar'
+//                url 'https://github.com/datastax/remote-junit-runner'
+//
+//                scm {
+//                    connection 'scm:git:https://github.com/datastax/remote-junit-runner.git'
+//                    developerConnection 'scm:git:git@github.com:datastax/remote-junit-runner.git'
+//                    url 'https://github.com/datastax/remote-junit-runner.git'
+//                }
+//
+//                licenses {
+//                    license {
+//                        name 'Apache License Version 2.0'
+//                        url 'http://www.apache.org/licenses/LICENSE-2.0'
+//                        distribution 'repo'
+//                    }
+//                }
+//
+//                developers {
+//                    developer {
+//                        name = 'Various'
+//                        organization = 'DataStax'
+//                    }
+//                }
+//
+//            }
+//        }
+//    }
+//}
 
