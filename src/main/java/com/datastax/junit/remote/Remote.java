@@ -110,7 +110,7 @@ public class Remote extends Runner implements Filterable {
         RunWith runWith = AnnotationUtils.getClassLevelAnnotation(RunWith.class, clazz);
         remoteRunnerClass = runWith != null ? runWith.value() : BlockJUnit4ClassRunner.class;
         Host host = AnnotationUtils.getClassLevelAnnotation(Host.class, clazz);
-        endpoint = host != null ? String.format("//{}:{}/{})", host.name(), host.port(), RemoteTestServer.NAME) :
+        endpoint = host != null ? String.format("//%s:%s/%s)", host.name(), host.port(), RemoteTestServer.NAME) :
                 "//localhost:"+ RemoteTestServer.DEFAULT_PORT+"/"+ RemoteTestServer.NAME;
         setup();
     }
